@@ -22,7 +22,6 @@ mail = Mail(app)
 #Sahkopostin konffaus
 app.config.update(
     DEBUG=True,
-    #EMAIL SETTINGS
     MAIL_SERVER='smtp.gmail.com',
     MAIL_PORT=465,
     MAIL_USE_SSL=True,
@@ -32,29 +31,6 @@ app.config.update(
 
 #Tyotilojen maara, ajatuksella, etta yhden tyotilan voi varata kerran paivassa, koko paivan ajaksi.
 number_of_tables=24
-
-#Kayttajan database-olion luominen, lisatty myos salasanan salaus.
-
-class User(db.Model):
-    __tablename__ = 'users'
-    id = db.Column(db.Integer, primary_key=True)
-    telephone = db.Column(db.String(32), index=True)
-    password_hash = db.Column(db.String(64))
-    email= db.Column(db.String(32))
-    name= db.Column(db.String(32))
-    def hash_password(self, password):
-        self.password_hash = pwd_context.encrypt(password)
-
-    def verify_password(self, password):
-        return pwd_context.verify(password, self.password_hash)
-
-#Varauksen olio-ohjelma tietokannalle.
-class Reservation(db.Model):
-    __tablename__ = 'reservations'
-    id = db.Column(db.Integer, primary_key=True)
-    telephone = db.Column(db.String(32))
-    date = db.Column(db.DateTime, index=True)
-
 
 #Salasanan tsekkaus
 
@@ -171,7 +147,46 @@ def home():
     return 'The current user is ' + current_user.username
 
 
-# Stuff for the Databases
+# Asiakkaat
+
+
+class asiakkaat(db.Model):
+    __tablename__ = 'Asiakkaat'
+    id = db.Column(db.Integer, primary_key=True)
+    puhelin = db.Column(db.String(32), index=True)
+    password_hash = db.Column(db.String(64))
+    email= db.Column(db.String(32))
+    nimi= db.Column(db.String(32))
+
+    def __init__(self, id, puhelin, nimi, email):
+        self.id = id
+        self.puhelin = puhelin
+        self.email = email
+        self.nimi = nimi
+
+    def hash_password(self, password):
+        self.password_hash = pwd_context.encrypt(password)
+
+    def verify_password(self, password):
+        return pwd_context.verify(password, self.password_hash)
+
+
+
+@app.route('/asiakkaat', methods =['GET'])
+def gasiakkaat():
+    gasiakkaat = asiakkaat.query.all()
+    output = []
+    for asiakastiedot in gasiakkaat:
+        currAsiakas = {}
+        currAsiakas ['id']= asiakastiedot.id
+        currAsiakas ['puhelin']= asiakkaat.puhelin
+        currAsiakas['email'] = asiakkaat.email
+        currAsiakas['nimi'] = asiakkaat.nimi
+        output.append (currAsiakas)
+    return jsonify(output)
+
+
+#Työtilat
 
 class tilat(db.Model):
     __tablename__ = 'tyotilat'
@@ -184,25 +199,6 @@ class tilat(db.Model):
         self.ttKuvaus = ttKuvaus
         self.ttTyyppi = ttTyyppi
 
-class asiakkaat(db.Model):
-    __tablename__ = 'asiakkaat'
-    AsiakasNimi = db.Column(db.String(50), primary_key=True)
-    AsiakasEmail = db.Column(db.String(), nullable=False)
-
-    def __init__(self, asiakasNimi, asiakasEmail):
-        self.asiakasNimi = asiakasNimi
-        self.asiakasEmail = asiakasEmail
-
-#@app.route('/asiakkaat', methods =['GET'])
-#def gasiakkaat():
- #   gasiakkaat = asiakkaat.query.all()
-  #  output = []
-   # for asiakkaat in gasiakkaat:
-    #    currAsiakas = {}
-    #    currAsiakas ['AsiakasNimi']= asiakkaat.AsiakasNimi
-   #     currAsiakas ['AsiakasEmail']= asiakkaat.AsiakasEmail
-  #      output.append (currAsiakas)
- #   return jsonify(output)
 
 @app.route('/tilat', methods=['POST'])
 def postTilat():
@@ -223,6 +219,14 @@ def gtilat():
         currTila['ttTyyppi'] = tyotilat.ttTyyppi
         output.append(currTila)
     return jsonify(output)
+
+#Varaukset
+
+class Varaus(db.Model):
+    __tablename__ = 'Varaukset'
+    id = db.Column(db.Integer, primary_key=True)
+    telephone = db.Column(db.String(32))
+    date = db.Column(db.DateTime, index=True)
 
 
 if __name__ == "__main__":
