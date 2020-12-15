@@ -19,7 +19,7 @@ login_manager.init_app(app)
 auth = HTTPBasicAuth()
 mail = Mail(app)
 
-#Sahkopostin konffaus
+#Sähköpostin konffaus.
 app.config.update(
     DEBUG=True,
     MAIL_SERVER='smtp.gmail.com',
@@ -29,10 +29,10 @@ app.config.update(
     MAIL_PASSWORD = '<app password>'
     )
 
-#Tyotilojen maara, ajatuksella, etta yhden tyotilan voi varata kerran paivassa, koko paivan ajaksi.
+#Työtilojen määrä, ajatuksella, että yhden työtilan voi varata kerran päivässä, koko päivan ajaksi.
 number_of_tables=24
 
-#Salasanan tsekkaus
+#Salasanan tarkistus.
 
 @auth.verify_password
 def verify_password(telephone, password):
@@ -43,12 +43,12 @@ def verify_password(telephone, password):
     g.user = user
     return True
 
-#Virheiden varalle
+#Virheiden varalle.
 @app.errorhandler(404)
 def not_found(error):
     return make_response(jsonify({'error': 'Voi juma, jotai män piellee'}), 404)
 
-#Reitti jota pitkin uusi käyttäjä lisätään. Käyttäjällä voi kyllä olla useampi sähkäri..
+#Reitti, jota pitkin uusi käyttäjä lisätään. Käyttäjällä voi kyllä olla useampi sähköposti.
 @app.route('/api/user/add', methods=['POST'])
 def new_user():
     telephone = request.json.get('telephone')
