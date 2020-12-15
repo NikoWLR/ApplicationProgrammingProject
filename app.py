@@ -5,9 +5,9 @@ from flask_login import LoginManager, UserMixin, login_user, login_required, log
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:admin@localhost'  #Korvaa postgres oman tietokannan nimellä ja admin omalla salasanalla.
-api = Api(app)                                                                   #Tämän jälkeen PyCharmin terminalissa komennot: python -> from app import db -> db.create_all()
-db = SQLAlchemy(app)                                                             # Tämän pitäisi luoda tietokanta pgadminiin. Serverin sain itse päälle vaan ajamalla terminalissa komennon: flask run
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:admin@localhost'
+api = Api(app)
+db = SQLAlchemy(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 
@@ -36,6 +36,7 @@ def index():
 def logout():
     return 'You are now logged out!'
 
+
 @app.route('/home')
 @login_required
 def home():
@@ -43,6 +44,45 @@ def home():
 
 
 # Stuff for the Databases
+
+
+#Varaukset
+
+class varaukset(db.Model):
+    __tablename__ = 'varaukset'
+    varausAika = db.Column(db.DateTime(50), primary_key=True)
+    varausPaikka = db.Column(db.String(), nullable=False)
+    varausHenkilo = db.Column(db.String(), nullable=False)
+
+    def __init__(self, varausAika, varausPaikka, varausHenkilo):
+        self.varausAika = varausAika
+        self.varausPaikka = varausPaikka
+        self.varausHenkilo = varausHenkilo
+
+#Asiakkaat
+
+class asiakkaat(db.Model):
+    __tablename__ = 'asiakkaat'
+    AsiakasNimi = db.Column(db.String(50), primary_key=True)
+    AsiakasEmail = db.Column(db.String(), nullable=False)
+
+    def __init__(self, asiakasNimi, asiakasEmail):
+        self.asiakasNimi = asiakasNimi
+        self.asiakasEmail = asiakasEmail
+
+
+# @app.route('/asiakkaat', methods =['GET'])
+# def gasiakkaat():
+#   gasiakkaat = asiakkaat.query.all()
+#  output = []
+# for asiakkaat in gasiakkaat:
+#    currAsiakas = {}
+#    currAsiakas ['AsiakasNimi']= asiakkaat.AsiakasNimi
+#     currAsiakas ['AsiakasEmail']= asiakkaat.AsiakasEmail
+#      output.append (currAsiakas)
+#   return jsonify(output)
+
+#Työtilat
 
 class tilat(db.Model):
     __tablename__ = 'tyotilat'
@@ -55,25 +95,6 @@ class tilat(db.Model):
         self.ttKuvaus = ttKuvaus
         self.ttTyyppi = ttTyyppi
 
-class asiakkaat(db.Model):
-    __tablename__ = 'asiakkaat'
-    AsiakasNimi = db.Column(db.String(50), primary_key=True)
-    AsiakasEmail = db.Column(db.String(), nullable=False)
-
-    def __init__(self, asiakasNimi, asiakasEmail):
-        self.asiakasNimi = asiakasNimi
-        self.asiakasEmail = asiakasEmail
-
-#@app.route('/asiakkaat', methods =['GET'])
-#def gasiakkaat():
- #   gasiakkaat = asiakkaat.query.all()
-  #  output = []
-   # for asiakkaat in gasiakkaat:
-    #    currAsiakas = {}
-    #    currAsiakas ['AsiakasNimi']= asiakkaat.AsiakasNimi
-   #     currAsiakas ['AsiakasEmail']= asiakkaat.AsiakasEmail
-  #      output.append (currAsiakas)
- #   return jsonify(output)
 
 @app.route('/tilat', methods=['POST'])
 def postTilat():
@@ -82,6 +103,7 @@ def postTilat():
     db.session.add(tila)
     db.session.commit(tila)
     return jsonify(tiladata)
+
 
 @app.route('/tilat', methods=['GET'])
 def gtilat():
@@ -95,6 +117,6 @@ def gtilat():
         output.append(currTila)
     return jsonify(output)
 
-
 if __name__ == "__main__":
+    db.create_all()
     app.run(port=5000, debug=True)
