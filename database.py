@@ -16,7 +16,7 @@ class tilat (db.Model):
     def __init__(self, ttNimi, ttKuvaus, ttTyyppi):
         self.ttNimi = ttNimi
         self.ttKuvaus = ttKuvaus
-        #self.ttTyyppi = ttTyyppi
+        self.ttTyyppi = ttTyyppi
 
 #"Asiakkaat-table" jossa
 class asiakkaat (db.Model):
