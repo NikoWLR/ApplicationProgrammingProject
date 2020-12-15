@@ -6,10 +6,9 @@ from flask_login import LoginManager, UserMixin, login_user, login_required, log
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config[
-    'SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:admin@localhost'  # Korvaa postgres oman tietokannan nimellä ja admin omalla salasanalla
-api = Api(app)
-db = SQLAlchemy(app)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:admin@localhost'  #Korvaa postgres oman tietokannan nimellä ja admin omalla salasanalla.
+api = Api(app)                                                                   #Tämän jälkeen PyCharmin terminalissa komennot: python -> from app import db -> db.create_all()
+db = SQLAlchemy(app)                                                             # Tämän pitäisi luoda tietokanta pgadminiin. Serverin sain itse päälle vaan ajamalla terminalissa komennon: flask run
 login_manager = LoginManager()
 login_manager.init_app(app)
 
