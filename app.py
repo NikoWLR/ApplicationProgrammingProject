@@ -46,7 +46,7 @@ def home():
 # Stuff for the Databases
 
 
-#Varaukset
+# Varaukset
 
 class varaukset(db.Model):
     __tablename__ = 'varaukset'
@@ -59,7 +59,21 @@ class varaukset(db.Model):
         self.varausPaikka = varausPaikka
         self.varausHenkilo = varausHenkilo
 
-#Asiakkaat
+
+@app.route('/varaukset', methods=['GET'])
+def getvaraukset():
+    kaikkivaraukset = varaukset.query.all()
+    output = []
+    for varaustiedot in kaikkivaraukset:
+        currVaraus = {}
+        currVaraus['varausAika'] = varaustiedot.varausAika
+        currVaraus['varausPaikka'] = varaustiedot.varausPaikka
+        currVaraus['varausHenkilo'] = varaustiedot.varausHenkilo
+        output.append(currVaraus)
+    return jsonify(output)
+
+
+# Asiakkaat
 
 class asiakkaat(db.Model):
     __tablename__ = 'asiakkaat'
@@ -71,18 +85,19 @@ class asiakkaat(db.Model):
         self.asiakasEmail = asiakasEmail
 
 
-# @app.route('/asiakkaat', methods =['GET'])
-# def gasiakkaat():
-#   gasiakkaat = asiakkaat.query.all()
-#  output = []
-# for asiakkaat in gasiakkaat:
-#    currAsiakas = {}
-#    currAsiakas ['AsiakasNimi']= asiakkaat.AsiakasNimi
-#     currAsiakas ['AsiakasEmail']= asiakkaat.AsiakasEmail
-#      output.append (currAsiakas)
-#   return jsonify(output)
+@app.route('/asiakkaat', methods=['GET'])
+def gasiakkaat():
+    gasiakkaat = asiakkaat.query.all()
+    output = []
+    for asiakastiedot in gasiakkaat:
+        currAsiakas = {}
+        currAsiakas['AsiakasNimi'] = asiakastiedot.AsiakasNimi
+        currAsiakas['AsiakasEmail'] = asiakastiedot.AsiakasEmail
+        output.append(currAsiakas)
+    return jsonify(output)
 
-#Työtilat
+
+# Työtilat
 
 class tilat(db.Model):
     __tablename__ = 'tyotilat'
@@ -116,6 +131,7 @@ def gtilat():
         currTila['ttTyyppi'] = tyotilat.ttTyyppi
         output.append(currTila)
     return jsonify(output)
+
 
 if __name__ == "__main__":
     db.create_all()
