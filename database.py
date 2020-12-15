@@ -4,9 +4,9 @@ app = Flask(__name__)
 db = SQLAlchemy(app)
 
 
-# "Työtilat" table, jossa toistaiseksi vain työtilan nimi ja kuvaus.
-# Myöhemmin mahdollisesti myös boolean arvolla toimiva "varattu" rivi. Jos varattu = true -> heitä error message x .
-
+# "Tyarattu = true -> heitä error message x .
+                        ötilat" table, jossa toistaiseksi vain työtilan nimi ja kuvaus.
+# Myöhemmin mahdollisesti myös boolean arvolla toimiva "varattu" rivi. Jos v
 class tilat (db.Model):
     __tablename__ = 'tyotilat'
     ttNimi = db.Column(db.String(50), primary_key = True)

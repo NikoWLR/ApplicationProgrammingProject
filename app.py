@@ -1,7 +1,6 @@
 from flask import Flask, jsonify, request
 from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
-# from database import tilat
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 
 app = Flask(__name__)
@@ -32,11 +31,10 @@ def index():
     return 'You are now logged in!'
 
 
-@app.route('logout')
+@app.route('/logout')
 @login_required
 def logout():
     return 'You are now logged out!'
-
 
 @app.route('/home')
 @login_required
@@ -66,16 +64,16 @@ class asiakkaat(db.Model):
         self.asiakasNimi = asiakasNimi
         self.asiakasEmail = asiakasEmail
 
-@app.route('/asiakkaat', methods =['GET'])
-def gasiakkaat():
-    kaikkiAsiakkaat = asiakkaat.query.all()
-    output = []
-    for asiakkaat in kaikkiAsiakkaat:
-        currAsiakas = {}
-        currAsiakas ['AsiakasNimi']= asiakkaat.AsiakasNimi
-        currAsiakas ['AsiakasEmail']= asiakkaat.AsiakasEmail
-        output.append (currAsiakas)
-    return jsonify(output)
+#@app.route('/asiakkaat', methods =['GET'])
+#def gasiakkaat():
+ #   gasiakkaat = asiakkaat.query.all()
+  #  output = []
+   # for asiakkaat in gasiakkaat:
+    #    currAsiakas = {}
+    #    currAsiakas ['AsiakasNimi']= asiakkaat.AsiakasNimi
+   #     currAsiakas ['AsiakasEmail']= asiakkaat.AsiakasEmail
+  #      output.append (currAsiakas)
+ #   return jsonify(output)
 
 @app.route('/tilat', methods=['POST'])
 def postTilat():
@@ -96,15 +94,6 @@ def gtilat():
         currTila['ttTyyppi'] = tyotilat.ttTyyppi
         output.append(currTila)
     return jsonify(output)
-
-
-@app.route('/tilat', methods=['POST'])
-def postTilat():
-    tiladata = request.get_json()
-    tila = tilat(ttNimi=tiladata['ttNimi'], ttKuvaus=tiladata['ttKuvaus'], ttTyyppi=tiladata['ttTyyppi'])
-    db.session.add(tila)
-    db.session.commit(tila)
-    return jsonify(tiladata)
 
 
 if __name__ == "__main__":
