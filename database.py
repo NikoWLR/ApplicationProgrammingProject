@@ -1,26 +1,28 @@
-from app import jsonify
 from app import db
 
+# "Työtilat" table, jossa toistaiseksi vain työtilan nimi ja kuvaus.
+# Myöhemmin mahdollisesti myös boolean arvolla toimiva "varattu" rivi. Jos varattu = true -> heitä error message x .
 
-# "Työtilat" table, jossa toistaiseksi vain työtilan nimi ja kuvaus
-
-class tyotilat (db.Model):
+class tilat (db.Model):
     __tablename__ = 'tyotilat'
     ttNimi = db.Column(db.String(50), primary_key = True)
     ttKuvaus = db.Column(db.String(), nullable = False)
+    ttTyyppi = db.Column(db.String(60), nullable=False)
 
-    def __init__(self, ttNimi, ttKuvaus):
+    def __init__(self, ttNimi, ttKuvaus, ttTyyppi):
         self.ttNimi = ttNimi
         self.ttKuvaus = ttKuvaus
+        self.ttTyyppi = ttTyyppi
 
-@app.route('/tilat', methods =['GET'])
-def gettilat():
-    kaikkitilat = tyotilat.query.all()
-    output = []
-    for tyotilat in kaikkitilat:
-        currTila = {}
-        currTila ['ttNimi']= tyotilat.ttNimi
-        currTila ['ttKuvaus']= tyotilat.ttKuvaus
-        output.append (currTila)
-    return jsonify(output)
+#"Asiakkaat-table" jossa
+class asiakkaat (db.Model):
+    __tablename__ = 'asiakkaat'
+    ttNimi = db.Column(db.String(50), primary_key = True)
+    ttKuvaus = db.Column(db.String(), nullable = False)
+
+    def __init__(self, asiakasNimi, asiakasKuvaus):
+        self.asiakasNimi = asiakasNimi
+        self.asiakasKuvaus = asiakasKuvaus
+
+
 
