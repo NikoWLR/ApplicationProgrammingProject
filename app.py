@@ -185,6 +185,15 @@ def gasiakkaat():
     return jsonify(output)
 
 
+@app.route('/asiakkaat', methods=['POST'])
+def postTAsiakkaat():
+    tiladata = request.get_json()
+    tila = tilat(ttNimi=tiladata['ttNimi'], ttKuvaus=tiladata['ttKuvaus'], ttTyyppi=tiladata['ttTyyppi'])
+    db.session.add(tila)
+    db.session.commit()
+    return jsonify(tiladata)
+
+
 #Työtilat
 
 class tilat(db.Model):
@@ -204,7 +213,7 @@ def postTilat():
     tiladata = request.get_json()
     tila = tilat(ttNimi=tiladata['ttNimi'], ttKuvaus=tiladata['ttKuvaus'], ttTyyppi=tiladata['ttTyyppi'])
     db.session.add(tila)
-    db.session.commit(tila)
+    db.session.commit()
     return jsonify(tiladata)
 
 @app.route('/tilat', methods=['GET'])
