@@ -33,28 +33,9 @@ app.config.update(
 #Tyotilojen maara, ajatuksella, etta yhden tyotilan voi varata kerran paivassa, koko paivan ajaksi.
 number_of_tables=24
 
-#Kayttajan database-olion luominen, lisatty myos salasanan salaus.
 
-class User(db.Model):
-    __tablename__ = 'users'
-    id = db.Column(db.Integer, primary_key=True)
-    telephone = db.Column(db.String(32), index=True)
-    password_hash = db.Column(db.String(64))
-    email= db.Column(db.String(32))
-    name= db.Column(db.String(32))
-    def hash_password(self, password):
-        self.password_hash = pwd_context.encrypt(password)
-
-    def verify_password(self, password):
-        return pwd_context.verify(password, self.password_hash)
 
 #Varauksen olio-ohjelma tietokannalle.
-class Reservation(db.Model):
-    __tablename__ = 'reservations'
-    id = db.Column(db.Integer, primary_key=True)
-    telephone = db.Column(db.String(32))
-    date = db.Column(db.DateTime, index=True)
-
 
 #Salasanan tsekkaus
 
@@ -128,7 +109,7 @@ def make_reservation():
             msg = Message("Reservation made successfully!",
                           sender="restaurant@gmail.com",
                           recipients=[user.email])
-            message_string = """Hi {0},\nYou have made a reservation successfully in our restaurant on {1}.\nFeel free to contact us for any inquiries. Thank you.\nRestaurant Staff"""
+            message_string = """Hi {0},\nYou have made a reservation successfully! on {1}.\nFeel free to contact us for any inquiries."""
             msg.body = message_string.format(user.name, date)
             mail.send(msg)
             return (jsonify({'status': 'Reservation added successfully'}))
@@ -170,8 +151,47 @@ def logout():
 def home():
     return 'The current user is ' + current_user.username
 
+#Varaukset
 
-# Stuff for the Databases
+class Reservation(db.Model):
+    __tablename__ = 'reservations'
+    id = db.Column(db.Integer, primary_key=True)
+    telephone = db.Column(db.String(32))
+    date = db.Column(db.DateTime, index=True)
+
+
+# Asiakkaat
+
+
+
+class asiakkaat (db.Model):
+    __tablename__ = 'Asiakkaat'
+    id = db.Column(db.Integer, primary_key=True)
+    telephone = db.Column(db.String(32), index=True)
+    password_hash = db.Column(db.String(64))
+    email= db.Column(db.String(32))
+    name= db.Column(db.String(32))
+    def hash_password(self, password):
+        self.password_hash = pwd_context.encrypt(password)
+
+    def verify_password(self, password):
+        return pwd_context.verify(password, self.password_hash)
+
+@app.route('/asiakkaat', methods =['GET'])
+def gasiakkaat():
+    gasiakkaat = asiakkaat.query.all()
+    output = []
+    for asiakastiedot in gasiakkaat:
+        currAsiakas = {}
+        currAsiakas ['id']= asiakastiedot.id
+        currAsiakas ['telephone']= asiakastiedot.telephone
+        currAsiakas['email'] = asiakastiedot.email
+        currAsiakas['name'] = asiakastiedot.name
+        output.append(currAsiakas)
+    return jsonify(output)
+
+
+#Työtilat
 
 class tilat(db.Model):
     __tablename__ = 'tyotilat'
@@ -183,26 +203,6 @@ class tilat(db.Model):
         self.ttNimi = ttNimi
         self.ttKuvaus = ttKuvaus
         self.ttTyyppi = ttTyyppi
-
-class asiakkaat(db.Model):
-    __tablename__ = 'asiakkaat'
-    AsiakasNimi = db.Column(db.String(50), primary_key=True)
-    AsiakasEmail = db.Column(db.String(), nullable=False)
-
-    def __init__(self, asiakasNimi, asiakasEmail):
-        self.asiakasNimi = asiakasNimi
-        self.asiakasEmail = asiakasEmail
-
-#@app.route('/asiakkaat', methods =['GET'])
-#def gasiakkaat():
- #   gasiakkaat = asiakkaat.query.all()
-  #  output = []
-   # for asiakkaat in gasiakkaat:
-    #    currAsiakas = {}
-    #    currAsiakas ['AsiakasNimi']= asiakkaat.AsiakasNimi
-   #     currAsiakas ['AsiakasEmail']= asiakkaat.AsiakasEmail
-  #      output.append (currAsiakas)
- #   return jsonify(output)
 
 @app.route('/tilat', methods=['POST'])
 def postTilat():
