@@ -1,15 +1,26 @@
-from flask import request
-from flask_restful import Resource
-from http import HTTPStatus
-import psycopg2
-from psycopg2 import Error
+from app import jsonify
+from app import db
 
-#Connect to DB (pyörii itsellä Dockerissa atm, pitää kehitellä joku järkevämpi jossain kohtaa jos ehtii)
 
-con = psycopg2.connect(
-            host ="localmachine",
-            database ="AppProDB",
-            user = "postgres",
-            password = "postgres"
-            
-)
+# "Työtilat" table, jossa toistaiseksi vain työtilan nimi ja kuvaus
+
+class tyotilat (db.Model):
+    __tablename__ = 'tyotilat'
+    ttNimi = db.Column(db.String(50), primary_key = True)
+    ttKuvaus = db.Column(db.String(), nullable = False)
+
+    def __init__(self, ttNimi, ttKuvaus):
+        self.ttNimi = ttNimi
+        self.ttKuvaus = ttKuvaus
+
+@app.route('/tilat', methods =['GET'])
+def gettilat():
+    kaikkitilat = tyotilat.query.all()
+    output = []
+    for tyotilat in kaikkitilat:
+        currTila = {}
+        currTila ['ttNimi']= tyotilat.ttNimi
+        currTila ['ttKuvaus']= tyotilat.ttKuvaus
+        output.append (currTila)
+    return jsonify(output)
+
