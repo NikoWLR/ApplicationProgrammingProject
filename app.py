@@ -173,25 +173,25 @@ class asiakkaat(db.Model):
 
 @app.route('/asiakkaat', methods =['GET'])
 def gasiakkaat():
-    gasiakkaat = asiakkaat.query.all()
+    kaikkiasiakkaat = asiakkaat.query.all()
     output = []
-    for asiakastiedot in gasiakkaat:
+    for asiakastiedot in kaikkiasiakkaat:
         currAsiakas = {}
         currAsiakas ['id']= asiakastiedot.id
-        currAsiakas ['puhelin']= asiakkaat.puhelin
-        currAsiakas['email'] = asiakkaat.email
-        currAsiakas['nimi'] = asiakkaat.nimi
-        output.append (currAsiakas)
+        currAsiakas ['puhelin']= asiakastiedot.puhelin
+        currAsiakas['email'] = asiakastiedot.email
+        currAsiakas['nimi'] = asiakastiedot.nimi
+        output.append(currAsiakas)
     return jsonify(output)
 
 
 @app.route('/asiakkaat', methods=['POST'])
-def postTAsiakkaat():
-    tiladata = request.get_json()
-    tila = tilat(ttNimi=tiladata['ttNimi'], ttKuvaus=tiladata['ttKuvaus'], ttTyyppi=tiladata['ttTyyppi'])
-    db.session.add(tila)
+def postAsiakkaat():
+    asiakasdata = request.get_json()
+    asiakas = asiakkaat(id=asiakasdata['id'], puhelin=asiakasdata['puhelin'], email=asiakasdata['email'], nimi=asiakasdata['nimi'])
+    db.session.add(asiakas)
     db.session.commit()
-    return jsonify(tiladata)
+    return jsonify(asiakasdata)
 
 
 #Työtilat
