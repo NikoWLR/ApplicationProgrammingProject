@@ -1,22 +1,56 @@
-from flask import Flask, jsonify, request
+import os
+from flask import Flask, jsonify, request, abort, g, url_for, make_response
 from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
+from flask_httpauth import HTTPBasicAuth
+from passlib.apps import custom_app_context as pwd_context
+from datetime import datetime
+from flask_mail import Mail, Message
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 
 app = Flask(__name__)
+#Konffaukset databasen ja Apin väliseen tiedonsiirtoon.
+app.config['SECRET_KEY'] = 'salainen'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+#Sahkopostin konffaus
+app.config.update(
+    DEBUG=True,
+    #EMAIL SETTINGS
+    MAIL_SERVER='smtp.gmail.com',
+    MAIL_PORT=465,
+    MAIL_USE_SSL=True,
+    MAIL_USERNAME = '<email to be used to send emails>',
+    MAIL_PASSWORD = '<app password>'
+    )
+
+#Osioiden määritys
+
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:admin@localhost'  #Korvaa postgres oman tietokannan nimellä ja admin omalla salasanalla.
 api = Api(app)                                                                   #Tämän jälkeen PyCharmin terminalissa komennot: python -> from app import db -> db.create_all()
 db = SQLAlchemy(app)                                                             # Tämän pitäisi luoda tietokanta pgadminiin. Serverin sain itse päälle vaan ajamalla terminalissa komennon: flask run
 login_manager = LoginManager()
 login_manager.init_app(app)
+auth = HTTPBasicAuth()
+mail = Mail(app)
 
+#Tyotilojen maara, ajatuksella, etta yhden tyotilan voi varata kerran paivassa, koko paivan ajaksi.
+number_of_tables=24
 
-# Stuff for the log in function
+#Kayttajan database-olion luominen, lisatty myos salasanan salaus.
 
-class User(UserMixin, db.Model):
+class User(db.Model):
+    __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(30), unique=True)
+    telephone = db.Column(db.String(32), index=True)
+    password_hash = db.Column(db.String(64))
+    email= db.Column(db.String(32))
+    name= db.Column(db.String(32))
+    def hash_password(self, password):
+        self.password_hash = pwd_context.encrypt(password)
+
+    def verify_password(self, password):
+        return pwd_context.verify(password, self.password_hash)
 
 
 @login_manager.user_loader
