@@ -32,7 +32,7 @@ def index():
     return 'You are now logged in!'
 
 
-@app.route('logout')
+@app.route('/logout')
 @login_required
 def logout():
     return 'You are now logged out!'
@@ -98,13 +98,13 @@ def gtilat():
     return jsonify(output)
 
 
-@app.route('/tilat', methods=['POST'])
-def postTilat():
-    tiladata = request.get_json()
-    tila = tilat(ttNimi=tiladata['ttNimi'], ttKuvaus=tiladata['ttKuvaus'], ttTyyppi=tiladata['ttTyyppi'])
-    db.session.add(tila)
-    db.session.commit(tila)
-    return jsonify(tiladata)
+#@app.route('/tilat', methods=['POST'])
+#def postTilat():
+ #   tiladata = request.get_json()
+  #  tila = tilat(ttNimi=tiladata['ttNimi'], ttKuvaus=tiladata['ttKuvaus'], ttTyyppi=tiladata['ttTyyppi'])
+   # db.session.add(tila)
+    #db.session.commit(tila)
+    #return jsonify(tiladata)
 
 
 if __name__ == "__main__":
