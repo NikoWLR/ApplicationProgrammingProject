@@ -52,7 +52,101 @@ class User(db.Model):
     def verify_password(self, password):
         return pwd_context.verify(password, self.password_hash)
 
+#Varauksen olio-ohjelma tietokannalle.
+class Reservation(db.Model):
+    __tablename__ = 'reservations'
+    id = db.Column(db.Integer, primary_key=True)
+    telephone = db.Column(db.String(32))
+    date = db.Column(db.DateTime, index=True)
 
+
+#Salasanan tsekkaus
+
+@auth.verify_password
+def verify_password(telephone, password):
+    # try to authenticate with username/password
+    user = User.query.filter_by(telephone=telephone).first()
+    if not user or not user.verify_password(password):
+            return False
+    g.user = user
+    return True
+
+#Virheiden varalle
+@app.errorhandler(404)
+def not_found(error):
+    return make_response(jsonify({'error': 'Voi juma, jotai män piellee'}), 404)
+
+#Reitti jota pitkin uusi käyttäjä lisätään. Käyttäjällä voi kyllä olla useampi sähkäri..
+@app.route('/api/user/add', methods=['POST'])
+def new_user():
+    telephone = request.json.get('telephone')
+    password = request.json.get('password')
+    email = request.json.get('email')
+    name = request.json.get('name')
+    if telephone is None or password is None or email is None or name is None:
+        abort(make_response(jsonify(message="Missing arguments"), 400))    # missing arguments
+    if User.query.filter_by(telephone=telephone).first() is not None:
+        abort(make_response(jsonify(message="A user with the same telephone number exists!"), 400))    # existing user
+    user = User(telephone=telephone,email=email,name=name)
+    user.hash_password(password)
+    db.session.add(user)
+    db.session.commit()
+    return (jsonify({'status': 'User added successfully!'}), 201)
+
+
+@app.route('/api/user/<int:id>')
+def get_user(id):
+    user = User.query.get(id)
+    if not user:
+        abort(400)
+    return jsonify({'telephone': user.telephone})
+
+
+@app.route('/api/resource')
+@auth.login_required
+def get_resource():
+    return jsonify({'data': 'Hello, %s!' % g.user.telephone})
+
+
+@app.route('/api/reservation', methods=['POST'])
+@auth.login_required
+def make_reservation():
+    date = request.json.get('date')
+    user_id = request.authorization.username
+
+    # getting user email
+    user = User.query.filter_by(telephone=user_id).first()
+
+    # Processing date and creating python datetime object
+    date_obj = datetime.strptime(date, '%Y-%m-%d')
+    reservations = Reservation.query.filter_by(date=date_obj).count()
+
+    if reservations < number_of_tables:
+        # More resevations can be made
+        reservation = Reservation(telephone=user_id, date=date_obj)
+        db.session.add(reservation)
+        db.session.commit()
+
+        # Sending the email
+        try:
+            msg = Message("Reservation made successfully!",
+                          sender="restaurant@gmail.com",
+                          recipients=[user.email])
+            message_string = """Hi {0},\nYou have made a reservation successfully in our restaurant on {1}.\nFeel free to contact us for any inquiries. Thank you.\nRestaurant Staff"""
+            msg.body = message_string.format(user.name, date)
+            mail.send(msg)
+            return (jsonify({'status': 'Reservation added successfully'}))
+
+        except Exception as e:
+            return (jsonify({'status': 'Reservation added successfully but email not sent'}))
+
+
+    else:
+        # Cannot make anymore reservations
+        return (jsonify({
+                            'status': 'Reservation adding failed !. We cannot accomodate any more reservations for the mentioned date'}))
+
+'''
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
@@ -128,7 +222,7 @@ def gtilat():
         currTila['ttTyyppi'] = tyotilat.ttTyyppi
         output.append(currTila)
     return jsonify(output)
-
+'''
 
 if __name__ == "__main__":
     app.run(port=5000, debug=True)
