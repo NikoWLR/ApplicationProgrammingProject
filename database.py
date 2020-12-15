@@ -1,4 +1,8 @@
-from app import db
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+app = Flask(__name__)
+db = SQLAlchemy(app)
+
 
 # "Työtilat" table, jossa toistaiseksi vain työtilan nimi ja kuvaus.
 # Myöhemmin mahdollisesti myös boolean arvolla toimiva "varattu" rivi. Jos varattu = true -> heitä error message x .
@@ -7,22 +11,22 @@ class tilat (db.Model):
     __tablename__ = 'tyotilat'
     ttNimi = db.Column(db.String(50), primary_key = True)
     ttKuvaus = db.Column(db.String(), nullable = False)
-    ttTyyppi = db.Column(db.String(60), nullable=False)
+    #ttTyyppi = db.Column(db.String(60), nullable=False)
 
     def __init__(self, ttNimi, ttKuvaus, ttTyyppi):
         self.ttNimi = ttNimi
         self.ttKuvaus = ttKuvaus
-        self.ttTyyppi = ttTyyppi
+        #self.ttTyyppi = ttTyyppi
 
 #"Asiakkaat-table" jossa
 class asiakkaat (db.Model):
     __tablename__ = 'asiakkaat'
-    ttNimi = db.Column(db.String(50), primary_key = True)
-    ttKuvaus = db.Column(db.String(), nullable = False)
+    AsiakasNimi = db.Column(db.String(50), primary_key = True)
+    AsiakasEmail = db.Column(db.String(), nullable = False)
 
-    def __init__(self, asiakasNimi, asiakasKuvaus):
+    def __init__(self, asiakasNimi, asiakasEmail):
         self.asiakasNimi = asiakasNimi
-        self.asiakasKuvaus = asiakasKuvaus
+        self.asiakasEmail = asiakasEmail
 
 
 

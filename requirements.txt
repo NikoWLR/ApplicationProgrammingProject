@@ -4,3 +4,4 @@ httpie==1.0.3
 psycopg2
 WTForms
 Flask-SQLAlchemy
+Flask-Migrate
