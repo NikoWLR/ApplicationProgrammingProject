@@ -1,37 +1,72 @@
-import os
-from flask import Flask, jsonify, request, abort, g, url_for, make_response
+from flask import Flask, jsonify, request
 from flask_restful import Api
-from http import HTTPStatus
 from flask_sqlalchemy import SQLAlchemy
-from flask_httpauth import HTTPBasicAuth
-from passlib.apps import custom_app_context as pwd_context
-from datetime import datetime
-from flask_mail import Mail, Message
+#from database import tilat
 
-#Flask serverin sekä Databasen määritys eli conffaus.
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'haluttu salaus avain'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
-app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
-#api = Api(app)
-
-#Sähköpostifunktion määrittäminen
-
-app.config.update(
-    DEBUG=True,
-    #EMAIL SETTINGS
-    MAIL_SERVER='smtp.gmail.com',
-    MAIL_PORT=465,
-    MAIL_USE_SSL=True,
-    MAIL_USERNAME = '<email to be used to send emails>',
-    MAIL_PASSWORD = '<app password>'
-    )
-
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:admin@localhost'
+api = Api(app)
 db = SQLAlchemy(app)
-auth = HTTPBasicAuth()
-mail = Mail(app)
+
+class tilat (db.Model):
+    __tablename__ = 'tyotilat'
+    ttNimi = db.Column(db.String(50), primary_key = True)
+    ttKuvaus = db.Column(db.String(), nullable = False)
+    ttTyyppi = db.Column(db.String(60), nullable=False)
+
+    def __init__(self, ttNimi, ttKuvaus, ttTyyppi):
+        self.ttNimi = ttNimi
+        self.ttKuvaus = ttKuvaus
+        #self.ttTyyppi = ttTyyppi
+
+#"Asiakkaat-table" jossa
+class asiakkaat (db.Model):
+    __tablename__ = 'asiakkaat'
+    AsiakasNimi = db.Column(db.String(50), primary_key = True)
+    AsiakasEmail = db.Column(db.String(), nullable = False)
+
+    def __init__(self, asiakasNimi, asiakasEmail):
+        self.asiakasNimi = asiakasNimi
+        self.asiakasEmail = asiakasEmail
+
+@app.route('/test', methods =['GET'])
+def test():
+    return {
+    'test':'test1'
+    }
+
+#@app.route('/asiakkaat', methods =['GET'])
+#def gasiakkaat():
+#    kaikkiAsiakkaat = asiakkaat.query.all()
+#    output = []
+#    for asiakkaat in kaikkiAsiakkaat:
+#        currAsiakas = {}
+#        currAsiakas ['AsiakasNimi']= asiakkaat.AsiakasNimi
+#        currAsiakas ['AsiakasEmail']= asiakkaat.AsiakasEmail
+#        output.append (currAsiakas)
+#    return jsonify(output)
+
+@app.route('/tilat', methods =['GET'])
+def gtilat():
+    kaikkitilat = tilat.query.all()
+    output = []
+    for tyotilat in kaikkitilat:
+        currTila = {}
+        currTila ['ttNimi']=tyotilat.ttNimi
+        currTila ['ttKuvaus']=tyotilat.ttKuvaus
+        currTila['ttTyyppi']=tyotilat.ttTyyppi
+        output.append (currTila)
+    return jsonify(output)
+
+@app.route('/tilat', methods =['POST'])
+def postTilat():
+    tiladata = request.get_json()
+    tila = tilat(ttNimi=tiladata['ttNimi'], ttKuvaus=tiladata['ttKuvaus'], ttTyyppi=tiladata['ttTyyppi'])
+    db.session.add(tila)
+    db.session.commit(tila)
+    return jsonify(tiladata)
 
 if __name__ == "__main__":
-    if not os.path.exists(Nikon database):
     app.run(port=5000, debug=True)
