@@ -8,7 +8,7 @@ from datetime import datetime
 from flask_mail import Mail, Message
 
 app = Flask(__name__)
-#Konffaukset databasen ja Apin väliseen tiedonsiirtoon.
+# Konffaukset databasen ja Apin väliseen tiedonsiirtoon.
 app.config['SECRET_KEY'] = 'salainen'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:admin@localhost'  #Korvaa postgres oman tietokannan nimellä ja admin omalla salasanalla.
@@ -19,7 +19,7 @@ login_manager.init_app(app)
 auth = HTTPBasicAuth()
 mail = Mail(app)
 
-#Sähköpostin konffaus.
+# Sähköpostin konffaus.
 app.config.update(
     DEBUG=True,
     MAIL_SERVER='smtp.gmail.com',
@@ -29,10 +29,10 @@ app.config.update(
     MAIL_PASSWORD = '<app password>'
     )
 
-#Työtilojen määrä, ajatuksella, että yhden työtilan voi varata kerran päivässä, koko päivan ajaksi.
+# Työtilojen määrä, ajatuksella, että yhden työtilan voi varata kerran päivässä, koko päivan ajaksi.
 number_of_tables=24
 
-#Salasanan tarkistus.
+# Salasanan tarkistus.
 
 @auth.verify_password
 def verify_password(telephone, password):
@@ -43,12 +43,12 @@ def verify_password(telephone, password):
     g.user = user
     return True
 
-#Virheiden varalle.
+# Virheiden varalle.
 @app.errorhandler(404)
 def not_found(error):
     return make_response(jsonify({'error': 'Voi juma, jotai män piellee'}), 404)
 
-#Reitti, jota pitkin uusi käyttäjä lisätään. Käyttäjällä voi kyllä olla useampi sähköposti.
+# Reitti, jota pitkin uusi käyttäjä lisätään. Käyttäjällä voi kyllä olla useampi sähköposti.
 @app.route('/api/user/add', methods=['POST'])
 def new_user():
     telephone = request.json.get('telephone')
@@ -89,17 +89,17 @@ def make_reservation():
     # getting user email
     user = User.query.filter_by(telephone=user_id).first()
 
-    # Processing date and creating python datetime object
+    # Processing date and creating python datetime object - date:n prosessointi ja datetime objektin luominen.
     date_obj = datetime.strptime(date, '%Y-%m-%d')
     reservations = Reservation.query.filter_by(date=date_obj).count()
 
     if reservations < number_of_tables:
-        # More resevations can be made
+        # More reservations can be made. - On mahdollisa tehdä lisää varauksia.
         reservation = Reservation(telephone=user_id, date=date_obj)
         db.session.add(reservation)
         db.session.commit()
 
-        # Sending the email
+        # Sending the email. - Sähköpostin lähetys käyttäjälle.
         try:
             msg = Message("Reservation made successfully!",
                           sender="restaurant@gmail.com",
@@ -114,7 +114,7 @@ def make_reservation():
 
 
     else:
-        # Cannot make anymore reservations
+        # Cannot make anymore reservations. - Ei voi tehdä enempää varauksia.
         return (jsonify({
                             'status': 'Reservation adding failed !. We cannot accomodate any more reservations for the mentioned date'}))
 # Stuff for the log in function
@@ -123,7 +123,7 @@ class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(30), unique=True)
 
-#TÄSTÄ ALKAA VANHA
+#TÄSTÄ ALKAA VANHA.
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
@@ -147,7 +147,7 @@ def home():
     return 'The current user is ' + current_user.username
 
 
-# Asiakkaat
+# Asiakkaat.
 
 class asiakkaat(db.Model):
     __tablename__ = 'Asiakkaat'
@@ -194,7 +194,7 @@ def postAsiakkaat():
     return jsonify(asiakasdata)
 
 
-#Työtilat
+# Työtilat.
 
 class tilat(db.Model):
     __tablename__ = 'tyotilat'
@@ -228,7 +228,7 @@ def gtilat():
         output.append(currTila)
     return jsonify(output)
 
-#Varaukset
+# Varaukset.
 
 class Reservation(db.Model):
     __tablename__ = 'Varaukset'
