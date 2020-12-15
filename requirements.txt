@@ -2,3 +2,5 @@ Flask==1.0.3
 Flask-RESTful==0.3.7
 httpie==1.0.3
 psycopg2
+WTForms
+Flask-SQLAlchemy
