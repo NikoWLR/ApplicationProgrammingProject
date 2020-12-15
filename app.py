@@ -58,7 +58,7 @@ def new_user():
     if telephone is None or password is None or email is None or name is None:
         abort(make_response(jsonify(message="Missing arguments"), 400))    # missing arguments
     if User.query.filter_by(telephone=telephone).first() is not None:
-        abort(make_response(jsonify(message="A user with the same telephone number exists!"), 400))    # existing user
+        abort(make_response(jsonify(message="A user with the same telephone number exists!"), 400))    # Jollain toisella sama numero
     user = User(telephone=telephone,email=email,name=name)
     user.hash_password(password)
     db.session.add(user)
@@ -149,7 +149,6 @@ def home():
 
 # Asiakkaat
 
-
 class asiakkaat(db.Model):
     __tablename__ = 'Asiakkaat'
     id = db.Column(db.Integer, primary_key=True)
@@ -222,12 +221,32 @@ def gtilat():
 
 #Varaukset
 
-class Varaus(db.Model):
+class Reservation(db.Model):
     __tablename__ = 'Varaukset'
     id = db.Column(db.Integer, primary_key=True)
     telephone = db.Column(db.String(32))
     date = db.Column(db.DateTime, index=True)
 
+
+@app.route('/varaukset', methods=['GET'])
+def getvaraukset():
+    kaikkivaraukset = Reservation.query.all()
+    output = []
+    for varaustiedot in kaikkivaraukset:
+        currVaraus = {}
+        currVaraus['id'] = varaustiedot.id
+        currVaraus['telephone'] = varaustiedot.telephone
+        currVaraus['date'] = varaustiedot.date
+        output.append(currVaraus)
+    return jsonify(output)
+
+@app.route('/varaukset', methods=['POST'])
+def postVaraukset():
+    varausdata = request.get_json()
+    varaus = Reservation(id=varausdata['id'], telephone=varausdata['telephone'], date=varausdata['date'])
+    db.session.add(varaus)
+    db.session.commit()
+    return jsonify(varausdata)
 
 if __name__ == "__main__":
     app.run(port=5000, debug=True)
