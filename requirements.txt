@@ -18,4 +18,3 @@ Werkzeug==0.12.2
 Flask-Mail
 WTForms
 Flask-SQLAlchemy
-Flask-Migrate
