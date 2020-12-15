@@ -86,7 +86,7 @@ def make_reservation():
     date = request.json.get('date')
     user_id = request.authorization.username
 
-    # getting user email
+    # getting user email - Vastaanottaa käyttäjän sähköpostia?
     user = User.query.filter_by(telephone=user_id).first()
 
     # Processing date and creating python datetime object - date:n prosessointi ja datetime objektin luominen.
@@ -94,7 +94,7 @@ def make_reservation():
     reservations = Reservation.query.filter_by(date=date_obj).count()
 
     if reservations < number_of_tables:
-        # More reservations can be made. - On mahdollisa tehdä lisää varauksia.
+        # More reservations can be made. - On mahdollista tehdä lisää varauksia.
         reservation = Reservation(telephone=user_id, date=date_obj)
         db.session.add(reservation)
         db.session.commit()
@@ -117,7 +117,7 @@ def make_reservation():
         # Cannot make anymore reservations. - Ei voi tehdä enempää varauksia.
         return (jsonify({
                             'status': 'Reservation adding failed !. We cannot accomodate any more reservations for the mentioned date'}))
-# Stuff for the log in function
+# Stuff for the log in function - Asioita sisäänkirjautumistoiminnolle.
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
