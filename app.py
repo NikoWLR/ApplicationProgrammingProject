@@ -1,17 +1,23 @@
-import os
 from flask import Flask, jsonify, request, abort, g, url_for, make_response
 from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from flask_httpauth import HTTPBasicAuth
 from passlib.apps import custom_app_context as pwd_context
 from datetime import datetime
 from flask_mail import Mail, Message
-from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 
 app = Flask(__name__)
 #Konffaukset databasen ja Apin väliseen tiedonsiirtoon.
 app.config['SECRET_KEY'] = 'salainen'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:admin@localhost'  #Korvaa postgres oman tietokannan nimellä ja admin omalla salasanalla.
+api = Api(app)                                                                   #Tämän jälkeen PyCharmin terminalissa komennot: python -> from app import db -> db.create_all()
+db = SQLAlchemy(app)                                                             # Tämän pitäisi luoda tietokanta pgadminiin. Serverin sain itse päälle vaan ajamalla terminalissa komennon: flask run
+login_manager = LoginManager()
+login_manager.init_app(app)
+auth = HTTPBasicAuth()
+mail = Mail(app)
 
 #Sahkopostin konffaus
 app.config.update(
@@ -23,16 +29,6 @@ app.config.update(
     MAIL_USERNAME = '<email to be used to send emails>',
     MAIL_PASSWORD = '<app password>'
     )
-
-#Osioiden määritys
-
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:admin@localhost'  #Korvaa postgres oman tietokannan nimellä ja admin omalla salasanalla.
-api = Api(app)                                                                   #Tämän jälkeen PyCharmin terminalissa komennot: python -> from app import db -> db.create_all()
-db = SQLAlchemy(app)                                                             # Tämän pitäisi luoda tietokanta pgadminiin. Serverin sain itse päälle vaan ajamalla terminalissa komennon: flask run
-login_manager = LoginManager()
-login_manager.init_app(app)
-auth = HTTPBasicAuth()
-mail = Mail(app)
 
 #Tyotilojen maara, ajatuksella, etta yhden tyotilan voi varata kerran paivassa, koko paivan ajaksi.
 number_of_tables=24
@@ -145,8 +141,13 @@ def make_reservation():
         # Cannot make anymore reservations
         return (jsonify({
                             'status': 'Reservation adding failed !. We cannot accomodate any more reservations for the mentioned date'}))
+# Stuff for the log in function
 
-'''
+class User(UserMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(30), unique=True)
+
+#TÄSTÄ ALKAA VANHA
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
@@ -222,7 +223,7 @@ def gtilat():
         currTila['ttTyyppi'] = tyotilat.ttTyyppi
         output.append(currTila)
     return jsonify(output)
-'''
+
 
 if __name__ == "__main__":
     app.run(port=5000, debug=True)
