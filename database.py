@@ -5,7 +5,7 @@ db = SQLAlchemy(app)
 
 
 # "Tyarattu = true -> heitä error message x .
-                        ötilat" table, jossa toistaiseksi vain työtilan nimi ja kuvaus.
+                        #ötilat" table, jossa toistaiseksi vain työtilan nimi ja kuvaus.
 # Myöhemmin mahdollisesti myös boolean arvolla toimiva "varattu" rivi. Jos v
 class tilat (db.Model):
     __tablename__ = 'tyotilat'
