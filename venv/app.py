@@ -1,3 +1,4 @@
+#Haetaan tarvittavat moduulitl.
 import os
 from flask import Flask, jsonify, request, abort, g, url_for, make_response, render_template
 from flask_restful import Api
@@ -24,14 +25,17 @@ mail = Mail(app)
 
 
 # Työtilojen määrä, ajatuksella, että yhden työtilan voi varata kerran päivässä, koko päivan ajaksi.
+
 number_of_tables=24
 
-#Callback jotta käyttäjän objekti voidaan ladata ID:n mukaisesti tietokannasta
+#Callback jotta käyttäjän objekti voidaan ladata ID:n mukaisesti tietokannasta.
+#Tässä vaiheessa koskee lähinnä Admin-toimintoja vaativaa osiota.
 
 @login_manager.user_loader
 def load_user(user_id):
     return User.get(user_id)
-# Salasanan tarkistus.
+
+#
 
 @auth.verify_password
 def verify_password(telephone, password):
@@ -41,6 +45,7 @@ def verify_password(telephone, password):
             return False
     g.user = user
     return True
+#Virheiden varalle toimito, joka palauttaa muokatun 404-sivun "I Love Bugs"
 
 @app.errorhandler(404)
 def user_loader(error):
@@ -128,33 +133,11 @@ def make_reservation():
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(30), unique=True)
-'''
-
-#TÄSTÄ ALKAA VANHA.
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
 
 
-@app.route('/')
-def index():
-    user = User.query.filter_by(username='Niko').first()
-    login_user(user)
-    return 'You are now logged in!'
-
-
-@app.route('/logout')
-@login_required
-def logout():
-    return 'You are now logged out!'
-
-@app.route('/home')
-@login_required
-def home():
-    return 'The current user is ' + current_user.username
-'''
-
-# Asiakkaat.
+#Asiakkaat-olion luominen ja siihen tarvittava data. Salasanan tallentaminen tekstinä on epäturvallista, joten
+#määritimme salasanat Passlib CryptContext riippuvaisiksi. Hash:iä vertaillaan esimerkiksi aina tietokantaan
+#tallennettuun dataan ja login on mahdollista palauttaa vain, jos tämä vertailu onnistui.
 
 class asiakkaat(db.Model):
     __tablename__ = 'Asiakkaat'
@@ -176,7 +159,7 @@ class asiakkaat(db.Model):
     def verify_password(self, password):
         return pwd_context.verify(password, self.password_hash)
 
-
+#Tämä route hakee KAIKKIEN asiakkaiden tiedot tietokannasta.
 
 @app.route('/asiakkaat', methods =['GET'])
 def gasiakkaat():
@@ -191,6 +174,8 @@ def gasiakkaat():
         output.append(currAsiakas)
     return jsonify(output)
 
+#Uuden asiakkaan luominen tietokantaan. HTML-tiedostossa, GUI:ssa voidaan implementoida siten, että
+#tietokannan data on liitetty formiin, joka voitaisiin submit-nappia painamalla lisätä tietokantaan.
 
 @app.route('/asiakkaat', methods=['POST'])
 def postAsiakkaat():
@@ -199,6 +184,8 @@ def postAsiakkaat():
     db.session.add(asiakas)
     db.session.commit()
     return jsonify(asiakasdata)
+
+#Asiakastiedon muokkaaminen tietokannassa jo olevaan tableen.
 
 @app.route('/asiakkaat/<int:id>', methods=['PUT'])
 def updateAsiakkaat(id):
@@ -209,6 +196,8 @@ def updateAsiakkaat(id):
     db.session.commit()
     return jsonify(asiakasdata)
 
+#Asiakkaan, eli käyttäjän poistaminen tietokannasta.
+
 @app.route('/asiakkaat/delete/<id>', methods=['GET', 'POST'])
 def deleteAsiakkaat(id):
     asiakasdata = asiakkaat.query.get(id)
@@ -216,7 +205,7 @@ def deleteAsiakkaat(id):
     db.session.commit()
     return jsonify(asiakasdata)
 
-# Työtilat.
+#Työtila-olion luominen tietokantaan.
 
 class tilat(db.Model):
     __tablename__ = 'tyotilat'
@@ -229,6 +218,7 @@ class tilat(db.Model):
         self.ttKuvaus = ttKuvaus
         self.ttTyyppi = ttTyyppi
 
+#Tilojen lisääminen tietokantaan.
 
 @app.route('/tilat', methods=['POST'])
 def postTilat():
@@ -237,6 +227,8 @@ def postTilat():
     db.session.add(tila)
     db.session.commit()
     return jsonify(tiladata)
+
+#Tilojen hakeminen tietokannasta.
 
 @app.route('/tilat', methods=['GET'])
 def gtilat():
