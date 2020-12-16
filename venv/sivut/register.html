@@ -48,7 +48,7 @@
                     <option value ="tila24">C2054 - Group Workspace</option>
                     </select>
             </form>
-                <button type="submit" value="Submit" >Delete</button>
+                <button onclick="myFunction()" type="submit" value="Submit" >Delete</button>
 
             </form>
             <p class="headline">Manage Clients</p>
@@ -58,20 +58,34 @@
                 <input type="text" placeholder="Phone Number" id="asiakasPuhelin" name="asiakasPuhelin" style="font-size: 130%" >
                 <button type="submit" value="Submit" >Add</button>
                 <form>
-                <select id ="tilat" name ="tilat">
+                <select id ="asiakkaat" name ="asiakkaat">
                     <option value ="tila1">Matti Teppo Tapio Meikäläinen</option>
                     <option value ="tila1">Maija Meikäläinen</option>
 
                     </select>
             </form>
-                <button type="submit" value="Submit" >Delete</button>
+                <button onclick="myFunction()" type="submit" value="Submit" >Delete</button>
             </form>
 
               
-            
+
             
         </div>
     </div>
 </body>
+
+<script>
+function myFunction() {
+  var x = document.getElementById("asiakkaat");
+  x.remove(x.selectedIndex);
+}
+</script>
+
+<script>
+function myFunction() {
+  var x = document.getElementById("tilat");
+  x.remove(x.selectedIndex);
+}
+</script>
 
 </html>
