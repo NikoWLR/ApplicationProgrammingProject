@@ -52,7 +52,7 @@ def not_found(error):
 #Alkavassa vihreessä tekstissä on osoita, joita voidaan lainata tarpeen mukaan.  Jos tulee olemaan vain yksi admin-käyttis,
 #Ei alla oleva app.route ole kovin oleellinen.
 
-'''
+
 # Reitti, jota pitkin uusi käyttäjä lisätään. Käyttäjällä voi kyllä olla useampi sähköposti.
 @app.route('/api/user/add', methods=['POST'])
 def new_user():
@@ -127,7 +127,7 @@ def make_reservation():
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(30), unique=True)
-
+'''
 #TÄSTÄ ALKAA VANHA.
 @login_manager.user_loader
 def load_user(user_id):
