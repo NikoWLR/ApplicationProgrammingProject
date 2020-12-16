@@ -7,6 +7,7 @@ from passlib.apps import custom_app_context as pwd_context
 from datetime import datetime
 from flask_mail import Mail, Message
 
+
 app = Flask(__name__)
 # Konffaukset databasen ja Apin väliseen tiedonsiirtoon.
 app.config['SECRET_KEY'] = 'salainen'
@@ -90,7 +91,7 @@ def make_reservation():
     date = request.json.get('date')
     user_id = request.authorization.username
 
-    # getting user email - Vastaanottaa käyttäjän sähköpostia?
+    # getting user email
     user = User.query.filter_by(telephone=user_id).first()
 
     # Processing date and creating python datetime object - date:n prosessointi ja datetime objektin luominen.
@@ -98,7 +99,7 @@ def make_reservation():
     reservations = Reservation.query.filter_by(date=date_obj).count()
 
     if reservations < number_of_tables:
-        # More reservations can be made. - On mahdollista tehdä lisää varauksia.
+        # More reservations can be made. - On mahdollisa tehdä lisää varauksia.
         reservation = Reservation(telephone=user_id, date=date_obj)
         db.session.add(reservation)
         db.session.commit()
@@ -121,7 +122,7 @@ def make_reservation():
         # Cannot make anymore reservations. - Ei voi tehdä enempää varauksia.
         return (jsonify({
                             'status': 'Reservation adding failed !. We cannot accomodate any more reservations for the mentioned date'}))
-# Stuff for the log in function - Asioita sisäänkirjautumistoiminnolle.
+# Stuff for the log in function
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
