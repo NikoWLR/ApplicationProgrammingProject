@@ -46,7 +46,7 @@ def verify_password(telephone, password):
 # Virheiden varalle.
 @app.errorhandler(404)
 def not_found(error):
-    return make_response(jsonify({'error': 'Voi juma, jotai män piellee'}), 404)
+    return make_response(jsonify({'error': 'So many bugs I had to stock up on insecticide'}), 404)
 
 # Reitti, jota pitkin uusi käyttäjä lisätään. Käyttäjällä voi kyllä olla useampi sähköposti.
 @app.route('/api/user/add', methods=['POST'])
@@ -193,6 +193,22 @@ def postAsiakkaat():
     db.session.commit()
     return jsonify(asiakasdata)
 
+@app.route('/asiakkaat/<int:id>', methods=['PUT'])
+def updateAsiakkaat(id):
+    asiakasdata = request.get_json()
+    currAsiakas = asiakasdata('id')
+    asiakas = asiakkaat.query.filter.by(id=currAsiakas).first()
+    asiakas.nimi = 'MUOKATTU'
+    db.session.commit()
+    return jsonify(asiakasdata)
+
+@app.route('/asiakkaat', methods=['DELETE'])
+def deleteAsiakkaat():
+    asiakasdata = request.get_json()
+    asiakas = asiakkaat(id=asiakasdata['id'], puhelin=asiakasdata['puhelin'], email=asiakasdata['email'], nimi=asiakasdata['nimi'])
+    db.session.delete(asiakas)
+    db.session.commit()
+    return jsonify(asiakasdata)
 
 # Työtilat.
 
