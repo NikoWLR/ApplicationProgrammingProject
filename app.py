@@ -19,8 +19,8 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 auth = HTTPBasicAuth()
 mail = Mail(app)
-
-# Sähköpostin konffaus.
+'''
+# Sähköpostin konffaus. (Ei relevanttiä tässä kohtaa)
 app.config.update(
     DEBUG=True,
     MAIL_SERVER='smtp.gmail.com',
@@ -29,7 +29,7 @@ app.config.update(
     MAIL_USERNAME = '<email to be used to send emails>',
     MAIL_PASSWORD = '<app password>'
     )
-
+'''
 # Työtilojen määrä, ajatuksella, että yhden työtilan voi varata kerran päivässä, koko päivan ajaksi.
 number_of_tables=24
 
@@ -37,18 +37,22 @@ number_of_tables=24
 
 @auth.verify_password
 def verify_password(telephone, password):
-    # try to authenticate with username/password
+    #Voi tarvittaessa kokeilla user-id:llä tai emaililla, jos toimii.
     user = User.query.filter_by(telephone=telephone).first()
     if not user or not user.verify_password(password):
             return False
     g.user = user
     return True
 
-# Virheiden varalle.
+# Virheiden varalle. Palauttaa JSON-muodossa tekstiä.
 @app.errorhandler(404)
 def not_found(error):
     return make_response(jsonify({'error': 'Voi juma, jotai män piellee'}), 404)
 
+#Alkavassa vihreessä tekstissä on osoita, joita voidaan lainata tarpeen mukaan.  Jos tulee olemaan vain yksi admin-käyttis,
+#Ei alla oleva app.route ole kovin oleellinen.
+
+'''
 # Reitti, jota pitkin uusi käyttäjä lisätään. Käyttäjällä voi kyllä olla useampi sähköposti.
 @app.route('/api/user/add', methods=['POST'])
 def new_user():
@@ -146,7 +150,7 @@ def logout():
 @login_required
 def home():
     return 'The current user is ' + current_user.username
-
+'''
 
 # Asiakkaat.
 
