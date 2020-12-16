@@ -209,11 +209,10 @@ def updateAsiakkaat(id):
     db.session.commit()
     return jsonify(asiakasdata)
 
-@app.route('/asiakkaat', methods=['DELETE'])
-def deleteAsiakkaat():
-    asiakasdata = request.get_json()
-    asiakas = asiakkaat(id=asiakasdata['id'], puhelin=asiakasdata['puhelin'], email=asiakasdata['email'], nimi=asiakasdata['nimi'])
-    db.session.delete(asiakas)
+@app.route('/asiakkaat/delete/<id>', methods=['GET', 'POST'])
+def deleteAsiakkaat(id):
+    asiakasdata = asiakkaat.query.get(id)
+    db.session.delete(asiakasdata)
     db.session.commit()
     return jsonify(asiakasdata)
 
@@ -251,6 +250,13 @@ def gtilat():
         output.append(currTila)
     return jsonify(output)
 
+@app.route('/tilat/delete/<ttName>', methods=['GET', 'POST'])
+def deleteTilat(ttNimi):
+    tyotilat = tilat.query.get(ttNimi)
+    db.session.delete(tyotilat)
+    db.session.commit()
+    return jsonify(tyotilat)
+
 # Varaukset.
 
 class Reservation(db.Model):
@@ -280,6 +286,13 @@ def postVaraukset():
     db.session.add(varaus)
     db.session.commit()
     return jsonify(varausdata)
+
+@app.route('/varaukset/delete/<id>', methods=['GET', 'POST'])
+def deleteTilat(id):
+    varaustiedot = varaukset.query.get(id)
+    db.session.delete(varaustiedot)
+    db.session.commit()
+    return jsonify(varaustiedot)
 
 #Tällä routella pitäisi avautua 404 sivu, ja kuva "I love bugs" näkyä...
 @app.route('/')
