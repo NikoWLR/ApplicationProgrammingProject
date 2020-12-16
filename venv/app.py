@@ -250,6 +250,9 @@ def gtilat():
         output.append(currTila)
     return jsonify(output)
 
+#Route, joka mahdollistaa tilojen Admin-hallinnoinnin, toisin sanoen niiden poistamisen
+#tietokannasta kokonaan.
+
 @app.route('/tilat/delete/<ttNimi>', methods=['GET', 'POST', 'DELETE'])
 def deleteTilat(ttNimi):
     tiladata = tilat.query.get(ttNimi)
@@ -257,7 +260,7 @@ def deleteTilat(ttNimi):
     db.session.commit()
     return jsonify(tiladata)
 
-# Varaukset.
+#Määritellään varauksen olio ja minkälaista dataa se pitää sisällään.
 
 class Reservation(db.Model):
     __tablename__ = 'Varaukset'
@@ -265,6 +268,8 @@ class Reservation(db.Model):
     telephone = db.Column(db.String(32))
     date = db.Column(db.DateTime, index=True)
 
+#Tämä route mahdollistaa varausten pyytämisen GET-komennolla tietokannasta.
+#Valmiissa UI:ssa html-tiedostoon liitetty tietokannan table näyttäisi varaukset.
 
 @app.route('/varaukset', methods=['GET'])
 def getvaraukset():
@@ -278,6 +283,9 @@ def getvaraukset():
         output.append(currVaraus)
     return jsonify(output)
 
+#Postman ohjeet: Jsonissa id ILMAN heittomerkkejä, pvm muodossa. 16/Dec/2020 esim.
+#Tämä route mahdollistaa varausdatan ajon tietokantantaan.
+#UI:n html formi lähettäisit siis POST pyynnön varauksen submit-nappulasta.
 
 @app.route('/varaukset', methods=['POST'])
 def postVaraukset():
@@ -287,6 +295,9 @@ def postVaraukset():
     db.session.commit()
     return jsonify(varausdata)
 
+#Route, jonka avulla varauksia voidaan poistaa ladattavasta tietokannasta.
+#Logiikka olisi sama UI:n kannalta: Haku ID-numerolla ja poistaminen submitilla.
+
 @app.route('/varaukset/delete/<id>', methods=['GET', 'POST'])
 def deleteVaraukset(id):
     varaustiedot = Reservation.query.get(id)
@@ -295,6 +306,8 @@ def deleteVaraukset(id):
     return jsonify(varaustiedot)
 
 #Tällä routella pitäisi avautua 404 sivu, ja kuva "I love bugs" näkyä...
+#Aloitussivuna tällä hetkellä, koska käyttöliittymän suunnittelu on kesken, eli
+#html-formien ja muiden komponenttien relaatiot @app.routeihin.
 @app.route('/')
 def index():
     return render_template('404.html')
