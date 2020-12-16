@@ -10,7 +10,7 @@ body {
 
     background-color:lightgrey;
     width: 50vw;
-    height: 50vh;
+    height: 55vh;
     position: absolute;
 	top:0;
 	bottom: 0;
@@ -74,7 +74,7 @@ input[type=password] {
 
 .login-text {
     font-family: Poppins;
-    font-size: 3vw;;
+    font-size: 2.5vw;;
     color: #6A6C71;
     text-align: center;
     /*background-color: red;*/
@@ -114,8 +114,9 @@ select{
     padding-right: 5px;
     direction: ltr;
     font-size: 0.9vw;
-    margin-left: 13.5vw;
-    height: 5vh;
+    margin-left: 12.4vw;
     margin-bottom: 5%;
+    height: 5vh;
+
 
 }
