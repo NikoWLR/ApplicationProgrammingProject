@@ -269,6 +269,7 @@ def getvaraukset():
         output.append(currVaraus)
     return jsonify(output)
 
+
 @app.route('/varaukset', methods=['POST'])
 def postVaraukset():
     varausdata = request.get_json()
@@ -276,6 +277,12 @@ def postVaraukset():
     db.session.add(varaus)
     db.session.commit()
     return jsonify(varausdata)
+
+
+@app.route('/')
+def home():
+    return render_template('register.html')
+
 
 if __name__ == "__main__":
     app.run(port=5000, debug=True)

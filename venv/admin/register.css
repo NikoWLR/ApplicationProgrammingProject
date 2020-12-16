@@ -35,14 +35,6 @@ body {
     /*background-color: green;*/
     overflow: hidden;
 }
-
-#logo {
-    position: relative;
-    float: right;
-    height: 25vh;
-    width: 15vw;
-    /*object-fit: cover ;*/
-    /*background-color: blue;*/
 }
 
 .responsive {
