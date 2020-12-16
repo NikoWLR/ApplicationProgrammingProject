@@ -1,3 +1,4 @@
+import os
 from flask import Flask, jsonify, request, abort, g, url_for, make_response, render_template
 from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
@@ -284,6 +285,7 @@ def postVaraukset():
 @app.route('/')
 def index():
     return render_template('404.html')
+
 
 
 if __name__ == "__main__":
