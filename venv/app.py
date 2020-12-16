@@ -281,7 +281,7 @@ def postVaraukset():
     db.session.commit()
     return jsonify(varausdata)
 
-
+#Tällä routella pitäisi avautua 404 sivu, ja kuva "I love bugs" näkyä...
 @app.route('/')
 def index():
     return render_template('404.html')
