@@ -250,12 +250,12 @@ def gtilat():
         output.append(currTila)
     return jsonify(output)
 
-@app.route('/tilat/delete/<ttName>', methods=['GET', 'POST'])
+@app.route('/tilat/delete/<ttNimi>', methods=['GET', 'POST', 'DELETE'])
 def deleteTilat(ttNimi):
-    tyotilat = tilat.query.get(ttNimi)
-    db.session.delete(tyotilat)
+    tiladata = tilat.query.get(ttNimi)
+    db.session.delete(tiladata)
     db.session.commit()
-    return jsonify(tyotilat)
+    return jsonify(tiladata)
 
 # Varaukset.
 
@@ -288,8 +288,8 @@ def postVaraukset():
     return jsonify(varausdata)
 
 @app.route('/varaukset/delete/<id>', methods=['GET', 'POST'])
-def deleteTilat(id):
-    varaustiedot = varaukset.query.get(id)
+def deleteVaraukset(id):
+    varaustiedot = Reservation.query.get(id)
     db.session.delete(varaustiedot)
     db.session.commit()
     return jsonify(varaustiedot)
