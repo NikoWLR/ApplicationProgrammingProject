@@ -4,7 +4,7 @@ app = Flask(__name__)
 db = SQLAlchemy(app)
 
 
-# "Jos varattu = true -> heitä error message x . "
+# "Jos varattu = true -> heitä error message x. "
 # Työtilat" table, jossa toistaiseksi vain työtilan nimi ja kuvaus."
 # Myöhemmin mahdollisesti myös boolean arvolla toimiva "varattu" rivi.
 class tilat (db.Model):
@@ -18,7 +18,7 @@ class tilat (db.Model):
         self.ttKuvaus = ttKuvaus
         self.ttTyyppi = ttTyyppi
 
-# "Asiakkaat-table" jossa:
+# Asiakkaat-table.
 class asiakkaat (db.Model):
     __tablename__ = 'asiakkaat'
     AsiakasNimi = db.Column(db.String(50), primary_key = True)

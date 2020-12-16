@@ -1,11 +1,12 @@
-from flask import Flask, jsonify, request, abort, g, url_for, make_response
+from datetime import datetime
+
+from flask import Flask, jsonify, request, abort, g, make_response
+from flask_httpauth import HTTPBasicAuth
+from flask_login import LoginManager, UserMixin, login_user, login_required, current_user
+from flask_mail import Mail, Message
 from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
-from flask_httpauth import HTTPBasicAuth
 from passlib.apps import custom_app_context as pwd_context
-from datetime import datetime
-from flask_mail import Mail, Message
 
 app = Flask(__name__)
 # Konffaukset databasen ja Apin väliseen tiedonsiirtoon.
