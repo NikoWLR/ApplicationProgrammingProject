@@ -1,6 +1,6 @@
 #Haetaan tarvittavat moduulitl.
 import os
-from flask import Flask, jsonify, request, abort, g, url_for, make_response, render_template
+from flask import Flask, jsonify, request, abort, g, url_for, make_response, render_template, redirect
 from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
@@ -17,8 +17,8 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:admin@localhost'  #Korvaa postgres oman tietokannan nimellä ja admin omalla salasanalla.
 api = Api(app)                                                                   #Tämän jälkeen PyCharmin terminalissa komennot: python -> from app import db -> db.create_all()
 db = SQLAlchemy(app)                                                             # Tämän pitäisi luoda tietokanta pgadminiin. Serverin sain itse päälle vaan ajamalla terminalissa komennon: flask run
-login_manager = LoginManager()
-login_manager.init_app(app)
+login_manager = LoginManager() #FLASK-LOGIN objekti
+login_manager.init_app(app) #FLASK-LOGIN konffaus
 auth = HTTPBasicAuth()
 mail = Mail(app) #Ei varsinaisessa käytössä, koska Email-domainia ei ole olemassa.
 
@@ -34,6 +34,20 @@ number_of_tables=24
 @login_manager.user_loader
 def load_user(user_id):
     return User.get(user_id)
+
+#Hyvin yksinkertainen login tässä kohtaa, jolla päästään admin tunnuksilla eteenpäin.
+#Ei saatu liitettyä vielä omaan html-tiedostoon, sekä redirectiin tarvittava salaus ei onnistu.
+#Eli aina joutuu manuaalisesti uusimaan linkin serverille..
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    error = None
+    if request.method == 'POST':
+        if request.form['username'] != 'admin' or request.form['password'] != 'admin':
+            error = 'Invalid Credentials.'
+        else:
+            return redirect("http://localhost:63342/ApplicationProgrammingProject/venv/sivut/register.html?_ijt=1saf0pdvotmscj0uokrlssegal")
+    return render_template('login.html', error=error)
 
 #Callback toiminto, joka tarkistaa kahden argumentin yhteensopivuuden. Olemme käyttäneen
 #asiakkaa db-modelissa hash_password callbackia, joten tätä ei tarvita. (periaatteessa)
