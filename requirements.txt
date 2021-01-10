@@ -8,10 +8,6 @@ Flask-SQLAlchemy
 itsdangerous
 Jinja2
 MarkupSafe
-passlib
 SQLAlchemy
 Werkzeug
-Flask-Mail
-WTForms
 Flask-SQLAlchemy
-Flask-Login
